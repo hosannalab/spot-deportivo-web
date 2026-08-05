@@ -1,0 +1,149 @@
+name: Spot Deportivo Web CI/CD
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: spot-deportivo-web-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+  IMAGE_REPOSITORY: spot-deportivo-web
+  WORKING_DIRECTORY: .
+
+jobs:
+  ci:
+    name: CI - Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIRECTORY }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: npm ci
+
+      - name: Typecheck & build (smoke)
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_PUBLIC_API_KEY: ${{ vars.VITE_PUBLIC_API_KEY }}
+          VITE_COMPANY_EXTERNAL_ID: ${{ vars.VITE_COMPANY_EXTERNAL_ID }}
+
+      - name: Generate image tag
+        id: meta
+        run: echo "tag=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
+
+  build-prod:
+    name: Build & Push PROD Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: ci
+    if: github.ref == 'refs/heads/master'
+    environment: PROD
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIRECTORY }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: npm ci
+
+      - name: Build
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_PUBLIC_API_KEY: ${{ vars.VITE_PUBLIC_API_KEY }}
+          VITE_COMPANY_EXTERNAL_ID: ${{ vars.VITE_COMPANY_EXTERNAL_ID }}
+
+      - name: Verify dist
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: ls -la dist
+
+      - name: Login DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & Push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          build-args: |
+            VITE_API_URL=${{ vars.VITE_API_URL }}
+            VITE_PUBLIC_API_KEY=${{ vars.VITE_PUBLIC_API_KEY }}
+            VITE_COMPANY_EXTERNAL_ID=${{ vars.VITE_COMPANY_EXTERNAL_ID }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_REPOSITORY }}:prod-${{ needs.ci.outputs.image_tag }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_REPOSITORY }}:prod-latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_REPOSITORY }}:latest
+
+  deploy-prod:
+    name: Deploy PROD
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs:
+      - ci
+      - build-prod
+    if: github.ref == 'refs/heads/master'
+    environment: PROD
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            set -e
+
+            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_REPOSITORY }}:prod-${{ needs.ci.outputs.image_tag }}"
+            TRAEFIK_HOST="${{ vars.TRAEFIK_WEB_HOST }}"
+            if [ -z "$TRAEFIK_HOST" ]; then TRAEFIK_HOST="spotdeportivo.hosannalab.com"; fi
+
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+            docker network inspect proxy >/dev/null 2>&1 || docker network create proxy
+            docker pull "$IMAGE"
+            docker rm -f spot-deportivo-web-prod || true
+
+            docker run -d \
+              --name spot-deportivo-web-prod \
+              --restart unless-stopped \
+              --network proxy \
+              -l traefik.enable=true \
+              -l "traefik.http.routers.spot-deportivo-web-prod.rule=Host(\`$TRAEFIK_HOST\`)" \
+              -l traefik.http.routers.spot-deportivo-web-prod.entrypoints=websecure \
+              -l traefik.http.routers.spot-deportivo-web-prod.tls.certresolver=letsencrypt \
+              -l traefik.http.services.spot-deportivo-web-prod.loadbalancer.server.port=80 \
+              "$IMAGE"
+
+            docker image prune -af || true

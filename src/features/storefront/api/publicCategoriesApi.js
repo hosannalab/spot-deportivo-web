@@ -1,0 +1,1 @@
+export { fetchPublicCategories } from "./publicApiClient";
