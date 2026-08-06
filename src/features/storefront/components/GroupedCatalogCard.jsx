@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
-import { getPriceLabel } from "../utils/productStyleUtils";
+import {
+  formatStyleAvailabilityHint,
+  getPriceLabel,
+} from "../utils/productStyleUtils";
 import ProductImageSlot from "./ProductImageSlot";
 
 function GroupedCatalogCard({
@@ -8,14 +11,14 @@ function GroupedCatalogCard({
   name,
   image,
   brand,
-  model,
-  type,
+  category,
   minPrice,
   maxPrice,
+  colorCount,
   sizeCount,
   hasStock,
 }) {
-  const metaParts = [brand, model, type].filter(Boolean);
+  const metaParts = [category, brand].filter(Boolean);
   const metaText = metaParts.length ? metaParts.join(" · ") : null;
 
   return (
@@ -37,10 +40,7 @@ function GroupedCatalogCard({
             {getPriceLabel(minPrice, maxPrice)}
           </div>
           <p className="product-card__hint">
-            {sizeCount > 1
-              ? `${sizeCount} tallas disponibles`
-              : "Ver tallas y colores"}
-            {!hasStock && " · Consultar stock"}
+            {formatStyleAvailabilityHint({ colorCount, sizeCount, hasStock })}
           </p>
           <span className="btn-dark product-card__cta">Ver producto</span>
         </div>

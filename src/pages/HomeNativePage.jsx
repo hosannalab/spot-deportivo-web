@@ -10,7 +10,7 @@ import TestimonialsSection from "../features/storefront/components/TestimonialsS
 import FaqSection from "../features/storefront/components/FaqSection";
 import usePublicProducts from "../features/storefront/hooks/usePublicProducts";
 import { categoryRouteList } from "../data/categoryRoutes";
-import { mapGroupedProductToCatalogItem } from "../features/storefront/utils/productMappers";
+import { mapStyleToCatalogItem } from "../features/storefront/utils/productMappers";
 
 function HomeNativePage() {
   useSitePageBoot(
@@ -21,7 +21,7 @@ function HomeNativePage() {
     page: 1,
     pageSize: 8,
     status: "ACTIVE",
-    groupByProduct: true,
+    groupByStyle: true,
     sortBy: "createdAt",
     sortOrder: "desc",
   });
@@ -30,7 +30,7 @@ function HomeNativePage() {
     () =>
       apiItems
         .slice(0, 8)
-        .map((item, index) => mapGroupedProductToCatalogItem(item, index)),
+        .map((item, index) => mapStyleToCatalogItem(item, index)),
     [apiItems],
   );
 
@@ -40,7 +40,7 @@ function HomeNativePage() {
         <img
           className="hero-bg"
           data-hero-img
-          src="assets/img/hero-bg.jpg"
+          src="assets/img/hero-bg.png"
           alt=""
           aria-hidden="true"
           fetchPriority="high"
@@ -141,7 +141,7 @@ function HomeNativePage() {
               <ProductCardSkeleton count={4} />
             ) : featuredProducts.length ? (
               featuredProducts.map((product) => (
-                <GroupedCatalogCard key={product.productId} {...product} />
+                <GroupedCatalogCard key={product.styleKey || product.productId} {...product} />
               ))
             ) : (
               <div className="empty-catalog" data-reveal>

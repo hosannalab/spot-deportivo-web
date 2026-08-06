@@ -6,7 +6,7 @@ import GroupedCatalogCard from "../features/storefront/components/GroupedCatalog
 import ProductCardSkeleton from "../features/storefront/components/ProductCardSkeleton";
 import usePublicProducts from "../features/storefront/hooks/usePublicProducts";
 import { getCategoryRoute } from "../data/categoryRoutes";
-import { mapGroupedProductToCatalogItem } from "../features/storefront/utils/productMappers";
+import { mapStyleToCatalogItem } from "../features/storefront/utils/productMappers";
 
 const config = getCategoryRoute("jerseys");
 
@@ -18,13 +18,13 @@ function JerseysPage() {
     pageSize: 100,
     status: "ACTIVE",
     categorySlug: config.slug,
-    groupByProduct: true,
+    groupByStyle: true,
     sortBy: "productName",
     sortOrder: "asc",
   });
 
   const catalogItems = useMemo(
-    () => items.map((item, index) => mapGroupedProductToCatalogItem(item, index)),
+    () => items.map((item, index) => mapStyleToCatalogItem(item, index)),
     [items],
   );
 
@@ -73,7 +73,7 @@ function JerseysPage() {
               <ProductCardSkeleton count={6} />
             ) : (
               catalogItems.map((product) => (
-                <GroupedCatalogCard key={product.productId} {...product} />
+                <GroupedCatalogCard key={product.styleKey || product.productId} {...product} />
               ))
             )}
           </div>

@@ -8,7 +8,11 @@ import ProductImageSlot from "../features/storefront/components/ProductImageSlot
 import { formatMoney } from "../features/storefront/utils/cart";
 import {
   buildCartMetaFromSelection,
+  formatColorAvailabilitySummary,
   formatColorLabel,
+  getColorAvailability,
+  getVariantAvailability,
+  pickDefaultColor,
   pickDefaultVariant,
 } from "../features/storefront/utils/productStyleUtils";
 import { getCategoryRouteByPath, categoryRouteList } from "../data/categoryRoutes";
@@ -24,7 +28,7 @@ function ProductDetailPage() {
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedColorId, setSelectedColorId] = useState(productId);
+  const [selectedColorId, setSelectedColorId] = useState("");
   const [selectedVariantId, setSelectedVariantId] = useState("");
 
   useSitePageBoot(
@@ -44,7 +48,12 @@ function ProductDetailPage() {
         const result = await fetchPublicProductStyle(productId);
         if (!active) return;
         setDetail(result);
-        setSelectedColorId(result.productId);
+
+        const matchedColor =
+          result.colors?.find((color) => color.productId === productId) ||
+          pickDefaultColor(result.colors);
+
+        setSelectedColorId(matchedColor?.productId || result.productId);
       } catch (err) {
         if (!active) return;
         setDetail(null);
@@ -79,12 +88,19 @@ function ProductDetailPage() {
     setSelectedVariantId(fallback?.id || "");
   }, [selectedColorId, selectedColor]);
 
+  const selectedColorAvailability = useMemo(
+    () => (selectedColor ? getColorAvailability(selectedColor) : null),
+    [selectedColor],
+  );
+
+  const selectedVariantAvailability = useMemo(
+    () => (selectedVariant ? getVariantAvailability(selectedVariant) : null),
+    [selectedVariant],
+  );
+
   function handleColorChange(nextColorId) {
     setSelectedColorId(nextColorId);
-    const color = detail?.colors?.find((entry) => entry.productId === nextColorId);
-    if (color) {
-      navigate(`/producto/${nextColorId}`, { replace: true });
-    }
+    navigate(`/producto/${nextColorId}`, { replace: true });
   }
 
   const cartMeta = buildCartMetaFromSelection({
@@ -128,74 +144,136 @@ function ProductDetailPage() {
                 <div className="product-detail__media">
                   <ProductImageSlot
                     src={selectedVariant?.imageUrl || selectedColor.imageUrl}
-                    alt={selectedColor.name}
+                    alt={detail.styleTitle}
                   />
                 </div>
 
                 <div className="product-detail__info">
-                  <p className="product-detail__brand">{detail.brand}</p>
+                  <p className="product-detail__brand">
+                    {detail.category} · {detail.brand}
+                  </p>
                   <h1 className="product-detail__title">{detail.styleTitle}</h1>
-                  <p className="product-detail__selected-name">{selectedColor.name}</p>
+                  {detail.model && (
+                    <p className="product-detail__model">Modelo: {detail.model}</p>
+                  )}
                   <p className="product-detail__price">
                     {selectedVariant?.salePrice
                       ? formatMoney(selectedVariant.salePrice)
                       : "Consultar precio"}
                   </p>
 
-                  {detail.colors.length > 1 && (
-                    <div className="product-option">
-                      <span className="product-option__label">
-                        Color: {formatColorLabel(selectedColor.color)}
-                      </span>
-                      <div className="color-swatches" role="list">
-                        {detail.colors.map((color) => (
+                  <div className="product-option">
+                    <span className="product-option__label">
+                      Color: {formatColorLabel(selectedColor.color)}
+                      {selectedColorAvailability && (
+                        <span
+                          className={`availability-badge ${
+                            selectedColorAvailability.isAvailable
+                              ? "availability-badge--ok"
+                              : "availability-badge--out"
+                          }`}
+                        >
+                          {formatColorAvailabilitySummary(selectedColor)}
+                        </span>
+                      )}
+                    </span>
+                    <div className="color-swatches" role="list">
+                      {detail.colors.map((color) => {
+                        const availability = getColorAvailability(color);
+                        const isSelected = color.productId === selectedColorId;
+
+                        return (
                           <button
                             key={color.productId}
                             type="button"
                             role="listitem"
-                            className={`color-swatch ${color.productId === selectedColorId ? "is-selected" : ""}`}
-                            aria-label={formatColorLabel(color.color)}
-                            aria-pressed={color.productId === selectedColorId}
+                            className={`color-swatch ${isSelected ? "is-selected" : ""} ${
+                              availability.isAvailable ? "" : "is-unavailable"
+                            }`}
+                            aria-label={`${formatColorLabel(color.color)} · ${formatColorAvailabilitySummary(color)}`}
+                            aria-pressed={isSelected}
                             onClick={() => handleColorChange(color.productId)}
                           >
-                            <ProductImageSlot src={color.imageUrl} alt="" />
+                            <div className="color-swatch__media">
+                              <ProductImageSlot src={color.imageUrl} alt="" />
+                              {!availability.isAvailable && (
+                                <span className="color-swatch__overlay">Agotado</span>
+                              )}
+                            </div>
                             <span>{formatColorLabel(color.color)}</span>
+                            <span
+                              className={`color-swatch__meta ${
+                                availability.isAvailable
+                                  ? "color-swatch__meta--ok"
+                                  : "color-swatch__meta--out"
+                              }`}
+                            >
+                              {formatColorAvailabilitySummary(color)}
+                            </span>
                           </button>
-                        ))}
-                      </div>
+                        );
+                      })}
                     </div>
-                  )}
+                  </div>
 
                   <div className="product-option">
-                    <span className="product-option__label">Talla</span>
+                    <span className="product-option__label">
+                      Talla
+                      {selectedVariantAvailability && (
+                        <span
+                          className={`availability-badge ${
+                            selectedVariantAvailability.isAvailable
+                              ? selectedVariantAvailability.isLowStock
+                                ? "availability-badge--low"
+                                : "availability-badge--ok"
+                              : "availability-badge--out"
+                          }`}
+                        >
+                          {selectedVariantAvailability.label}
+                        </span>
+                      )}
+                    </span>
                     <div className="size-chips" role="list">
                       {selectedColor.variants.map((variant) => {
+                        const availability = getVariantAvailability(variant);
                         const isSelected = variant.id === selectedVariantId;
-                        const isDisabled = variant.stock <= 0;
 
                         return (
                           <button
                             key={variant.id}
                             type="button"
                             role="listitem"
-                            className={`size-chip ${isSelected ? "is-selected" : ""} ${isDisabled ? "is-disabled" : ""}`}
+                            className={`size-chip ${isSelected ? "is-selected" : ""} ${
+                              availability.isAvailable ? "" : "is-disabled"
+                            } ${availability.isLowStock ? "is-low-stock" : ""}`}
+                            aria-label={`Talla ${variant.size} · ${availability.label}`}
                             aria-pressed={isSelected}
-                            disabled={isDisabled}
+                            disabled={!availability.isAvailable}
                             onClick={() => setSelectedVariantId(variant.id)}
                           >
-                            {variant.size}
+                            <span className="size-chip__label">{variant.size}</span>
+                            {!availability.isAvailable && (
+                              <span className="size-chip__status">Agotado</span>
+                            )}
+                            {availability.isLowStock && (
+                              <span className="size-chip__status size-chip__status--low">
+                                {availability.label}
+                              </span>
+                            )}
                           </button>
                         );
                       })}
                     </div>
-                    {selectedVariant && selectedVariant.stock <= 3 && selectedVariant.stock > 0 && (
-                      <p className="product-option__note">
-                        Quedan {selectedVariant.stock} unidades en esta talla.
+                    {!selectedColorAvailability?.isAvailable && (
+                      <p className="product-option__note product-option__note--warn">
+                        Este color no tiene tallas disponibles. Elige otro color.
                       </p>
                     )}
-                    {selectedVariant && selectedVariant.stock <= 0 && (
+                    {selectedColorAvailability?.isAvailable &&
+                      selectedVariantAvailability &&
+                      !selectedVariantAvailability.isAvailable && (
                       <p className="product-option__note product-option__note--warn">
-                        Talla agotada. Elige otra talla o color.
+                        Talla agotada. Elige otra talla o color disponible.
                       </p>
                     )}
                   </div>

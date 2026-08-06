@@ -5,7 +5,7 @@ import CatalogHero from "../features/storefront/components/CatalogHero";
 import GroupedCatalogCard from "../features/storefront/components/GroupedCatalogCard";
 import ProductCardSkeleton from "../features/storefront/components/ProductCardSkeleton";
 import usePublicProducts from "../features/storefront/hooks/usePublicProducts";
-import { mapGroupedProductToCatalogItem } from "../features/storefront/utils/productMappers";
+import { mapStyleToCatalogItem } from "../features/storefront/utils/productMappers";
 
 function CategoryCatalogPage({ config }) {
   useSitePageBoot(`${config.title} — Catalogo | Spot Deportivo Pro`);
@@ -15,13 +15,13 @@ function CategoryCatalogPage({ config }) {
     pageSize: 24,
     status: "ACTIVE",
     categorySlug: config.slug,
-    groupByProduct: true,
+    groupByStyle: true,
     sortBy: "productName",
     sortOrder: "asc",
   });
 
   const catalogItems = useMemo(
-    () => items.map((item, index) => mapGroupedProductToCatalogItem(item, index)),
+    () => items.map((item, index) => mapStyleToCatalogItem(item, index)),
     [items],
   );
 
@@ -70,7 +70,7 @@ function CategoryCatalogPage({ config }) {
               <ProductCardSkeleton count={6} />
             ) : (
               catalogItems.map((product) => (
-                <GroupedCatalogCard key={product.productId} {...product} />
+                <GroupedCatalogCard key={product.styleKey || product.productId} {...product} />
               ))
             )}
           </div>

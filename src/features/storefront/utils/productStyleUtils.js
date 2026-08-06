@@ -1,5 +1,12 @@
 import { formatMoney } from "./cart";
 
+export function buildStyleTitle(brand, model, category) {
+  if (brand && model) return `${brand} ${model}`.trim();
+  if (model) return model;
+  if (brand) return brand;
+  return category || "Producto";
+}
+
 export function getPriceLabel(minPrice, maxPrice) {
   if (!minPrice && !maxPrice) return "Consultar precio";
   if (minPrice === maxPrice) return formatMoney(minPrice);
@@ -14,6 +21,67 @@ export function pickDefaultVariant(variants = []) {
   );
 }
 
+export function pickDefaultColor(colors = []) {
+  return (
+    colors.find((color) => getColorAvailability(color).isAvailable) ||
+    colors[0] ||
+    null
+  );
+}
+
+export function getColorAvailability(color) {
+  const variants = color?.variants || [];
+  const availableVariants = variants.filter((variant) => variant.stock > 0);
+  const totalStock = variants.reduce((sum, variant) => sum + (variant.stock || 0), 0);
+
+  return {
+    isAvailable: availableVariants.length > 0,
+    totalStock,
+    availableSizes: availableVariants.length,
+    totalSizes: variants.length,
+  };
+}
+
+export function getVariantAvailability(variant) {
+  const stock = variant?.stock || 0;
+
+  if (stock <= 0) {
+    return {
+      isAvailable: false,
+      isLowStock: false,
+      label: "Agotado",
+    };
+  }
+
+  if (stock <= 3) {
+    return {
+      isAvailable: true,
+      isLowStock: true,
+      label: `Quedan ${stock}`,
+    };
+  }
+
+  return {
+    isAvailable: true,
+    isLowStock: false,
+    label: "Disponible",
+  };
+}
+
+export function formatColorAvailabilitySummary(color) {
+  const availability = getColorAvailability(color);
+
+  if (!availability.isAvailable) {
+    return "Agotado";
+  }
+
+  if (availability.availableSizes === availability.totalSizes) {
+    return "Disponible";
+  }
+
+  return `${availability.availableSizes} de ${availability.totalSizes} tallas disponibles`;
+}
+
 export function formatColorLabel(color) {
   if (!color) return "Estándar";
   return color
@@ -26,7 +94,7 @@ export function buildCartMetaFromSelection({ styleTitle, color, variant }) {
 
   const sizeLabel = variant.size || "";
   const colorLabel = formatColorLabel(color?.color);
-  const nameParts = [styleTitle || color?.name || "Producto"];
+  const nameParts = [styleTitle || "Producto"];
 
   if (colorLabel && colorLabel !== "Estándar") {
     nameParts.push(colorLabel);
@@ -45,4 +113,26 @@ export function buildCartMetaFromSelection({ styleTitle, color, variant }) {
     sku: variant.sku || variant.itemNo || "",
     variant: colorLabel !== "Estándar" ? colorLabel : "",
   };
+}
+
+export function formatStyleAvailabilityHint({ colorCount, sizeCount, hasStock }) {
+  const parts = [];
+
+  if (colorCount > 1) {
+    parts.push(`${colorCount} colores`);
+  } else if (colorCount === 1) {
+    parts.push("1 color");
+  }
+
+  if (sizeCount > 1) {
+    parts.push(`${sizeCount} tallas`);
+  } else if (sizeCount === 1) {
+    parts.push("1 talla");
+  }
+
+  if (!parts.length) {
+    return "Ver opciones disponibles";
+  }
+
+  return `${parts.join(" · ")}${hasStock ? "" : " · Consultar stock"}`;
 }

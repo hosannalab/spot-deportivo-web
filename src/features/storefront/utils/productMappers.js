@@ -20,6 +20,24 @@ export function mapVariantToSimpleProduct(item, index = 0) {
   };
 }
 
+export function mapStyleToCatalogItem(style, index = 0) {
+  return {
+    revealDelay: (index % 6) + 1,
+    productId: style.defaultProductId,
+    styleKey: style.styleKey,
+    name: style.styleTitle,
+    image: style.imageUrl || "",
+    brand: style.brand,
+    model: style.model,
+    category: style.category,
+    minPrice: style.minPrice,
+    maxPrice: style.maxPrice,
+    colorCount: style.colorCount,
+    sizeCount: style.sizeCount,
+    hasStock: style.hasStock,
+  };
+}
+
 export function mapGroupedProductToCatalogItem(product, index = 0) {
   const variants = product.variants || [];
   const prices = variants
@@ -39,6 +57,7 @@ export function mapGroupedProductToCatalogItem(product, index = 0) {
     minPrice,
     maxPrice,
     sizeCount: variants.length,
+    colorCount: 1,
     hasStock: variants.some((variant) => variant.stock > 0),
   };
 }
@@ -89,13 +108,17 @@ function getRouteForCategory(slug) {
 
 export function mapSearchResult(item) {
   const categoryPath = getRouteForCategory(item.categorySlug || item.category);
+  const displayName =
+    item.brand && item.model
+      ? `${item.brand} ${item.model}`.trim()
+      : item.name;
 
   return {
-    name: item.name,
+    name: displayName,
     url: item.productId ? `/producto/${item.productId}` : categoryPath,
     match: item.reference || item.itemNo || item.id,
     price: Number(item.salePrice) || 0,
     image: item.imageUrl || "",
-    meta: [item.reference, item.size, item.category].filter(Boolean).join(" · "),
+    meta: [item.type, item.size, item.category].filter(Boolean).join(" · "),
   };
 }
