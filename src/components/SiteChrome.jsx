@@ -366,7 +366,7 @@ function SiteChrome({ activeNav, children }) {
             <a
               key={`${item.url}-${item.match}`}
               className="search-result"
-              href={`${item.url}#goto-${encodeURIComponent(item.match)}`}
+              href={item.url}
               onClick={() => setSearchOpen(false)}
             >
               <ProductImageSlot

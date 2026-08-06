@@ -6,7 +6,7 @@ export const categoryRoutes = {
     title: "Hombre",
     crumb: "Hombre",
     subtitle:
-      "Polos y camisetas deportivas. Escribenos por WhatsApp para tallas y precio.",
+      "Polos y camisetas deportivas. Elige color y talla en la pagina del producto.",
     image: "assets/img/cat-hombre.jpg",
     imageAlt: "Ropa deportiva para hombre",
     whatsappProduct: "Catalogo Hombre",
@@ -18,7 +18,7 @@ export const categoryRoutes = {
     title: "Mujer",
     crumb: "Mujer",
     subtitle:
-      "Ropa deportiva para mujer. Escribenos por WhatsApp para tallas y precio.",
+      "Ropa deportiva para mujer. Elige color y talla en la pagina del producto.",
     image: "assets/img/cat-mujer.jpg",
     imageAlt: "Ropa deportiva para mujer",
     whatsappProduct: "Catalogo Mujer",
@@ -30,7 +30,7 @@ export const categoryRoutes = {
     title: "Calzado",
     crumb: "Calzado",
     subtitle:
-      "Zapatillas y calzado deportivo. Escribenos por WhatsApp para tallas y precio.",
+      "Zapatillas y calzado deportivo. Elige color y talla en la pagina del producto.",
     image: "assets/img/cat-calzado.jpg",
     imageAlt: "Calzado deportivo",
     whatsappProduct: "Catalogo Calzado",
@@ -53,7 +53,7 @@ export const categoryRoutes = {
     navKey: "jerseys",
     title: "Jerseys",
     crumb: "Jerseys",
-    subtitle: "MLB y LIDOM. Elige talla y version antes de agregar al carrito.",
+    subtitle: "MLB y LIDOM. Elige version, color y talla en la pagina del producto.",
     image: "",
     imageAlt: "Jerseys deportivos",
     whatsappProduct: "Catalogo Jerseys",

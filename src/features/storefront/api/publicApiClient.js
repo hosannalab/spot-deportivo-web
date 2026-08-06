@@ -59,4 +59,13 @@ export async function fetchPublicCategories() {
   return parsePublicResponse(response);
 }
 
+export async function fetchPublicProductStyle(productId) {
+  const response = await fetch(`${API_URL}/public/products/${productId}/style`, {
+    cache: "no-store",
+    headers: getPublicHeaders(),
+  });
+
+  return parsePublicResponse(response);
+}
+
 export { API_URL, COMPANY_EXTERNAL_ID, PUBLIC_API_KEY };

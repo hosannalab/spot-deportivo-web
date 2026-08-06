@@ -1,1 +1,1 @@
-export { fetchPublicProducts } from "./publicApiClient";
+export { fetchPublicProducts, fetchPublicProductStyle } from "./publicApiClient";

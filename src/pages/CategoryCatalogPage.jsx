@@ -2,10 +2,10 @@ import { useMemo } from "react";
 import SiteChrome from "../components/SiteChrome";
 import useSitePageBoot from "../app/useSitePageBoot";
 import CatalogHero from "../features/storefront/components/CatalogHero";
-import SimpleProductCard from "../features/storefront/components/SimpleProductCard";
+import GroupedCatalogCard from "../features/storefront/components/GroupedCatalogCard";
 import ProductCardSkeleton from "../features/storefront/components/ProductCardSkeleton";
 import usePublicProducts from "../features/storefront/hooks/usePublicProducts";
-import { mapVariantToSimpleProduct } from "../features/storefront/utils/productMappers";
+import { mapGroupedProductToCatalogItem } from "../features/storefront/utils/productMappers";
 
 function CategoryCatalogPage({ config }) {
   useSitePageBoot(`${config.title} — Catalogo | Spot Deportivo Pro`);
@@ -15,12 +15,13 @@ function CategoryCatalogPage({ config }) {
     pageSize: 24,
     status: "ACTIVE",
     categorySlug: config.slug,
-    sortBy: "createdAt",
-    sortOrder: "desc",
+    groupByProduct: true,
+    sortBy: "productName",
+    sortOrder: "asc",
   });
 
   const catalogItems = useMemo(
-    () => items.map((item, index) => mapVariantToSimpleProduct(item, index)),
+    () => items.map((item, index) => mapGroupedProductToCatalogItem(item, index)),
     [items],
   );
 
@@ -56,7 +57,7 @@ function CategoryCatalogPage({ config }) {
                   href="https://wa.me/18097020938"
                   data-whatsapp-product={config.whatsappProduct}
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   <span aria-hidden="true">💬</span> Consultar por WhatsApp
                 </a>
@@ -69,7 +70,7 @@ function CategoryCatalogPage({ config }) {
               <ProductCardSkeleton count={6} />
             ) : (
               catalogItems.map((product) => (
-                <SimpleProductCard key={product.cartId} {...product} />
+                <GroupedCatalogCard key={product.productId} {...product} />
               ))
             )}
           </div>

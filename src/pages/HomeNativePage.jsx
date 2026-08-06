@@ -1,7 +1,7 @@
 import SiteChrome from "../components/SiteChrome";
 import useSitePageBoot from "../app/useSitePageBoot";
 import { useMemo } from "react";
-import FeaturedProductCard from "../features/storefront/components/FeaturedProductCard";
+import GroupedCatalogCard from "../features/storefront/components/GroupedCatalogCard";
 import ProductCardSkeleton from "../features/storefront/components/ProductCardSkeleton";
 import PromoSection from "../features/storefront/components/PromoSection";
 import BenefitsSection from "../features/storefront/components/BenefitsSection";
@@ -10,7 +10,7 @@ import TestimonialsSection from "../features/storefront/components/TestimonialsS
 import FaqSection from "../features/storefront/components/FaqSection";
 import usePublicProducts from "../features/storefront/hooks/usePublicProducts";
 import { categoryRouteList } from "../data/categoryRoutes";
-import { mapVariantToFeaturedProduct } from "../features/storefront/utils/productMappers";
+import { mapGroupedProductToCatalogItem } from "../features/storefront/utils/productMappers";
 
 function HomeNativePage() {
   useSitePageBoot(
@@ -21,6 +21,7 @@ function HomeNativePage() {
     page: 1,
     pageSize: 8,
     status: "ACTIVE",
+    groupByProduct: true,
     sortBy: "createdAt",
     sortOrder: "desc",
   });
@@ -29,7 +30,7 @@ function HomeNativePage() {
     () =>
       apiItems
         .slice(0, 8)
-        .map((item, index) => mapVariantToFeaturedProduct(item, index)),
+        .map((item, index) => mapGroupedProductToCatalogItem(item, index)),
     [apiItems],
   );
 
@@ -140,7 +141,7 @@ function HomeNativePage() {
               <ProductCardSkeleton count={4} />
             ) : featuredProducts.length ? (
               featuredProducts.map((product) => (
-                <FeaturedProductCard key={product.cartId} {...product} />
+                <GroupedCatalogCard key={product.productId} {...product} />
               ))
             ) : (
               <div className="empty-catalog" data-reveal>

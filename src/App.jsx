@@ -6,6 +6,7 @@ import CalzadoPage from "./pages/CalzadoPage";
 import AccesoriosPage from "./pages/AccesoriosPage";
 import JerseysPage from "./pages/JerseysPage";
 import NuevasColeccionesPage from "./pages/NuevasColeccionesPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Route path="/accesorios" element={<AccesoriosPage />} />
       <Route path="/jerseys" element={<JerseysPage />} />
       <Route path="/nuevas-colecciones" element={<NuevasColeccionesPage />} />
+      <Route path="/producto/:productId" element={<ProductDetailPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

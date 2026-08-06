@@ -20,11 +20,36 @@ export function mapVariantToSimpleProduct(item, index = 0) {
   };
 }
 
+export function mapGroupedProductToCatalogItem(product, index = 0) {
+  const variants = product.variants || [];
+  const prices = variants
+    .map((variant) => Number(variant.salePrice))
+    .filter((price) => price > 0);
+  const minPrice = prices.length ? Math.min(...prices) : 0;
+  const maxPrice = prices.length ? Math.max(...prices) : 0;
+
+  return {
+    revealDelay: (index % 6) + 1,
+    productId: product.productId,
+    name: product.name,
+    image: product.imageUrl || variants[0]?.imageUrl || "",
+    brand: product.brand,
+    model: product.model,
+    type: product.type,
+    minPrice,
+    maxPrice,
+    sizeCount: variants.length,
+    hasStock: variants.some((variant) => variant.stock > 0),
+  };
+}
+
 export function mapGroupedProductToJerseyItem(product) {
   const variants = (product.variants || []).map((variant) => ({
+    id: variant.id,
     talla: variant.size,
     version: variant.type || product.type || "LOCAL",
     precio: variant.salePrice,
+    stock: variant.stock,
     codigo: variant.itemNo || variant.sku || variant.id,
     imagen: variant.imageUrl || product.imageUrl || "",
   }));
@@ -63,9 +88,11 @@ function getRouteForCategory(slug) {
 }
 
 export function mapSearchResult(item) {
+  const categoryPath = getRouteForCategory(item.categorySlug || item.category);
+
   return {
     name: item.name,
-    url: getRouteForCategory(item.categorySlug || item.category),
+    url: item.productId ? `/producto/${item.productId}` : categoryPath,
     match: item.reference || item.itemNo || item.id,
     price: Number(item.salePrice) || 0,
     image: item.imageUrl || "",
