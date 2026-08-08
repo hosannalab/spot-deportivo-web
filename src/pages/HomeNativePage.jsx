@@ -11,6 +11,7 @@ import FaqSection from "../features/storefront/components/FaqSection";
 import usePublicProducts from "../features/storefront/hooks/usePublicProducts";
 import { categoryRouteList } from "../data/categoryRoutes";
 import { mapStyleToCatalogItem } from "../features/storefront/utils/productMappers";
+import { publicAsset } from "../utils/publicAsset";
 
 function HomeNativePage() {
   useSitePageBoot(
@@ -40,7 +41,7 @@ function HomeNativePage() {
         <img
           className="hero-bg"
           data-hero-img
-          src="assets/img/hero-bg.png"
+          src={publicAsset("assets/img/hero-bg.png")}
           alt=""
           aria-hidden="true"
           fetchPriority="high"
@@ -84,14 +85,14 @@ function HomeNativePage() {
             {categoryRouteList.map((category, index) => (
               <a
                 key={category.path}
-                className={`category-card${category.featured ? " category-card--feature" : ""}`}
+                className={`category-card${category.featured ? " category-card--feature" : ""}${category.navKey === "jerseys" ? " category-card--jerseys" : ""}`}
                 href={category.path}
                 data-reveal
                 data-reveal-delay={category.featured ? undefined : String((index % 5) + 1)}
               >
                 {category.image && (
                   <img
-                    src={category.image}
+                    src={publicAsset(category.image)}
                     alt={category.imageAlt}
                     loading="lazy"
                     decoding="async"
