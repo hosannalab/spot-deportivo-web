@@ -54,7 +54,7 @@ export const categoryRoutes = {
     title: "Jerseys",
     crumb: "Jerseys",
     subtitle: "MLB y LIDOM. Elige version, color y talla en la pagina del producto.",
-    image: "",
+    image: "assets/img/cat-jerseys.jpeg",
     imageAlt: "Jerseys deportivos",
     whatsappProduct: "Catalogo Jerseys",
     grouped: true,

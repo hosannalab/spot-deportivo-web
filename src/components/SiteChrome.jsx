@@ -1,8 +1,9 @@
 import { brandConfig } from "../data/brandConfig";
 import useSiteChrome, {
   formatMoney,
-  formatCartItemMeta,
+  getCartItemTitle,
 } from "../features/storefront/hooks/useSiteChrome";
+import CartItemDetails from "../features/storefront/components/CartItemDetails";
 import ProductImageSlot from "../features/storefront/components/ProductImageSlot";
 
 function navClass(activeNav, navKey) {
@@ -47,8 +48,8 @@ function SiteChrome({ activeNav, children }) {
       </a>
 
       <div className="announce-bar" data-announce-bar>
-        ENVIO GRATIS en pedidos desde RD$2,000 · Paga con tarjeta, transferencia
-        o <strong>WhatsApp</strong>
+        ENVIO GRATIS en pedidos desde RD$2,000 · Paga por transferencia bancaria o{" "}
+        <strong>WhatsApp</strong>
       </div>
 
       <header
@@ -250,16 +251,12 @@ function SiteChrome({ activeNav, children }) {
           )}
           {cart.map((item) => (
             <div className="cart-item" key={item.id}>
-              <ProductImageSlot
-                className="cart-item__img"
-                src={item.image}
-                alt=""
-              />
+              <div className="cart-item__thumb">
+                <ProductImageSlot src={item.image} alt="" compact />
+              </div>
               <div className="cart-item__info">
-                <div className="cart-item__name">{item.name}</div>
-                <div className="cart-item__meta">
-                  {formatCartItemMeta(item)}
-                </div>
+                <div className="cart-item__name">{getCartItemTitle(item)}</div>
+                <CartItemDetails item={item} />
                 <div className="cart-item__row">
                   <div className="cart-item__stepper">
                     <button

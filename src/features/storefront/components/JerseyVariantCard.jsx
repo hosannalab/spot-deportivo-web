@@ -61,11 +61,13 @@ function JerseyVariantCard({
         <ProductAddToCartButton
           image={variant.cartMeta.image}
           cartId={variant.cartMeta.id}
+          cartTitle={variant.cartMeta.title || variant.cartMeta.name}
           cartName={variant.cartMeta.name}
           cartPrice={variant.cartMeta.price}
           cartCode={variant.cartMeta.code}
           cartSize={variant.cartMeta.size}
           cartSku={variant.cartMeta.sku}
+          cartColor={variant.cartMeta.color || variant.cartMeta.variant}
           cartVariant={variant.cartMeta.variant}
         />
       </div>

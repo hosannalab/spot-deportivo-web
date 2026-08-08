@@ -1,8 +1,30 @@
+import gsap from "gsap";
+
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 function setupRevealObserver() {
-  const targets = Array.from(document.querySelectorAll("[data-reveal]"));
-  if (!targets.length) return () => {};
+  const targets = new Set();
+
+  function observeNode(node) {
+    if (!(node instanceof Element)) return;
+    if (!node.hasAttribute("data-reveal")) return;
+    if (node.classList.contains("is-revealed")) return;
+    if (targets.has(node)) return;
+    targets.add(node);
+    observer.observe(node);
+  }
+
+  function scanRoot(root = document) {
+    if (root instanceof Element && root.matches("[data-reveal]")) {
+      observeNode(root);
+    }
+    root.querySelectorAll?.("[data-reveal]:not(.is-revealed)").forEach(observeNode);
+  }
 
   if (!("IntersectionObserver" in window)) {
+    scanRoot();
     targets.forEach((node) => node.classList.add("is-revealed"));
     return () => {};
   }
@@ -13,13 +35,57 @@ function setupRevealObserver() {
         if (!entry.isIntersecting) return;
         entry.target.classList.add("is-revealed");
         observer.unobserve(entry.target);
+        targets.delete(entry.target);
       });
     },
-    { threshold: 0.01, rootMargin: "0px 0px -2% 0px" },
+    { threshold: 0.12, rootMargin: "0px 0px -4% 0px" },
   );
 
-  targets.forEach((node) => observer.observe(node));
-  return () => observer.disconnect();
+  scanRoot();
+
+  const mutationObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType !== 1) return;
+        scanRoot(node);
+      });
+    });
+  });
+
+  mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+  return () => {
+    observer.disconnect();
+    mutationObserver.disconnect();
+    targets.clear();
+  };
+}
+
+function setupHeroEntrance() {
+  const items = Array.from(document.querySelectorAll("[data-hero-anim]"));
+  if (!items.length) return () => {};
+
+  if (prefersReducedMotion()) {
+    items.forEach((node) => node.classList.add("is-hero-visible"));
+    return () => {};
+  }
+
+  gsap.set(items, { opacity: 0, y: 36 });
+  const tween = gsap.to(items, {
+    opacity: 1,
+    y: 0,
+    duration: 0.85,
+    stagger: 0.11,
+    ease: "power3.out",
+    delay: 0.12,
+    onComplete: () => {
+      items.forEach((node) => node.classList.add("is-hero-visible"));
+    },
+  });
+
+  return () => {
+    tween.kill();
+  };
 }
 
 function setupTiltCards() {
@@ -27,7 +93,7 @@ function setupTiltCards() {
   const canHover = window.matchMedia(
     "(hover: hover) and (pointer: fine)",
   ).matches;
-  if (!canHover || !cards.length) return () => {};
+  if (!canHover || !cards.length || prefersReducedMotion()) return () => {};
 
   const cleanups = cards.map((card) => {
     let raf = null;
@@ -89,7 +155,7 @@ function setupFaqAccordion() {
 function setupHeroParallax() {
   const hero = document.querySelector("[data-hero]");
   const heroImg = document.querySelector("[data-hero-img]");
-  if (!hero || !heroImg) return () => {};
+  if (!hero || !heroImg || prefersReducedMotion()) return () => {};
 
   const onScroll = () => {
     const rect = hero.getBoundingClientRect();
@@ -104,6 +170,32 @@ function setupHeroParallax() {
   };
 
   onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  return () => window.removeEventListener("scroll", onScroll);
+}
+
+function setupHeaderScroll() {
+  const header = document.querySelector("[data-site-header]");
+  if (!header || prefersReducedMotion()) return () => {};
+
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(() => {
+      const currentY = window.scrollY;
+      if (currentY > 80 && currentY > lastY) {
+        header.classList.add("is-hidden");
+      } else {
+        header.classList.remove("is-hidden");
+      }
+      lastY = currentY;
+      ticking = false;
+    });
+  };
+
   window.addEventListener("scroll", onScroll, { passive: true });
   return () => window.removeEventListener("scroll", onScroll);
 }
@@ -147,9 +239,11 @@ function markButtonAsAdded(button) {
 
 export function setupContentInteractiveEffects(addProduct) {
   const revealCleanup = setupRevealObserver();
+  const heroCleanup = setupHeroEntrance();
   const tiltCleanup = setupTiltCards();
   const faqCleanup = setupFaqAccordion();
-  const heroCleanup = setupHeroParallax();
+  const parallaxCleanup = setupHeroParallax();
+  const headerCleanup = setupHeaderScroll();
 
   highlightFromHash();
   window.addEventListener("hashchange", highlightFromHash);
@@ -163,13 +257,15 @@ export function setupContentInteractiveEffects(addProduct) {
 
       const product = {
         id,
-        name,
+        title: button.dataset.title || name,
+        name: button.dataset.title || name,
         price: Number(button.dataset.price) || 0,
         code: button.dataset.code || "",
         image: button.dataset.image || "",
         size: button.dataset.size || "",
         sku: button.dataset.sku || "",
-        variant: button.dataset.variant || "",
+        color: button.dataset.color || button.dataset.variant || "",
+        variant: button.dataset.color || button.dataset.variant || "",
       };
 
       addProduct(product);
@@ -182,9 +278,11 @@ export function setupContentInteractiveEffects(addProduct) {
 
   return () => {
     revealCleanup();
+    heroCleanup();
     tiltCleanup();
     faqCleanup();
-    heroCleanup();
+    parallaxCleanup();
+    headerCleanup();
     listeners.forEach((cleanup) => cleanup());
     window.removeEventListener("hashchange", highlightFromHash);
   };

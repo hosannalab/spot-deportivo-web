@@ -94,18 +94,12 @@ export function buildCartMetaFromSelection({ styleTitle, color, variant }) {
 
   const sizeLabel = variant.size || "";
   const colorLabel = formatColorLabel(color?.color);
-  const nameParts = [styleTitle || "Producto"];
-
-  if (colorLabel && colorLabel !== "Estándar") {
-    nameParts.push(colorLabel);
-  }
-  if (sizeLabel) {
-    nameParts.push(`(${sizeLabel})`);
-  }
 
   return {
     id: variant.id,
-    name: nameParts.join(" "),
+    title: styleTitle || "Producto",
+    name: styleTitle || "Producto",
+    color: colorLabel !== "Estándar" ? colorLabel : "",
     price: Number(variant.salePrice) || 0,
     code: variant.itemNo || variant.sku || color?.reference || "",
     image: variant.imageUrl || color?.imageUrl || "",

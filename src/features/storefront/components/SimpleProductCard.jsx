@@ -8,9 +8,11 @@ function SimpleProductCard({
   name,
   codeText,
   cartId,
+  cartTitle,
   cartName,
   cartCode,
   cartSize,
+  cartColor,
   cartSku,
   cartPrice,
 }) {
@@ -31,9 +33,11 @@ function SimpleProductCard({
         <ProductAddToCartButton
           image={image}
           cartId={cartId}
+          cartTitle={cartTitle || cartName}
           cartName={cartName}
           cartCode={cartCode}
           cartSize={cartSize}
+          cartColor={cartColor}
           cartSku={cartSku}
           cartPrice={cartPrice}
         />

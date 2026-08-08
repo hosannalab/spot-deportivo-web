@@ -1,11 +1,4 @@
-const METHODS = [
-  "Visa",
-  "Mastercard",
-  "Banco Popular",
-  "BHD",
-  "Transferencia bancaria",
-  "WhatsApp",
-];
+const METHODS = ["Transferencia bancaria", "WhatsApp"];
 
 function PaymentMethodsSection() {
   return (

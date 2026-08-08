@@ -68,10 +68,13 @@ export function buildWhatsAppOrderMessage(
     if (unitPrice) total += lineTotal;
     else hasUnknown = true;
 
-    lines.push(`*${index + 1}. ${item.name}*`);
+    const title = getCartItemTitle(item);
+    const color = getCartItemColor(item);
+
+    lines.push(`*${index + 1}. ${title}*`);
     lines.push(`   • Cantidad: ${qty}`);
+    if (color) lines.push(`   • Color: ${color}`);
     if (item.size) lines.push(`   • Talla: ${item.size}`);
-    if (item.variant) lines.push(`   • Versión: ${item.variant}`);
 
     const code = item.sku || item.code;
     if (code) lines.push(`   • Código: ${code}`);
@@ -122,17 +125,37 @@ export function openWhatsAppCheckout(cart, whatsappNumber, storeName = brandConf
   window.open(href, "_blank", "noopener,noreferrer");
 }
 
-export function formatCartItemMeta(item) {
-  const parts = [];
+export function getCartItemTitle(item) {
+  return item.title || item.name || "Producto";
+}
 
-  if (item.qty > 1) parts.push(`Cant. ${item.qty}`);
-  if (item.size) parts.push(`Talla ${item.size}`);
-  if (item.price) parts.push(formatMoney(item.price));
+export function getCartItemColor(item) {
+  return item.color || item.variant || "";
+}
+
+export function getCartItemSpecs(item) {
+  const specs = [];
+  const color = getCartItemColor(item);
+
+  if (color) specs.push({ label: "Color", value: color });
+  if (item.size) specs.push({ label: "Talla", value: item.size });
 
   const code = item.sku || item.code;
-  if (code) parts.push(`Ref. ${code}`);
+  if (code) specs.push({ label: "Código", value: code });
+
+  return specs;
+}
+
+export function formatCartItemMeta(item) {
+  const specs = getCartItemSpecs(item);
+  const parts = specs.map((spec) => `${spec.label} ${spec.value}`);
+
+  if (item.price) parts.push(formatMoney(item.price));
+  if (item.qty > 1) parts.unshift(`Cant. ${item.qty}`);
 
   if (parts.length) return parts.join(" · ");
 
-  return code ? `Ref. ${code} · Consultar precio` : "Consultar precio";
+  return item.sku || item.code
+    ? `Ref. ${item.sku || item.code} · Consultar precio`
+    : "Consultar precio";
 }

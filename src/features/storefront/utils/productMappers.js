@@ -11,9 +11,11 @@ export function mapVariantToSimpleProduct(item, index = 0) {
     name: item.name,
     codeText: codeParts.join(" · ") || "Ref. N/D",
     cartId: item.id,
-    cartName: `${item.name}${item.size ? ` (${item.size})` : ""}`,
+    cartTitle: item.name,
+    cartName: item.name,
     cartCode: item.reference || item.sku || item.itemNo || "",
     cartSize: item.size || "",
+    cartColor: item.color || "",
     cartSku: item.sku || item.itemNo || "",
     cartPrice: String(Number(item.salePrice) || 0),
     price: Number(item.salePrice) || 0,
@@ -45,6 +47,9 @@ export function mapGroupedProductToCatalogItem(product, index = 0) {
     .filter((price) => price > 0);
   const minPrice = prices.length ? Math.min(...prices) : 0;
   const maxPrice = prices.length ? Math.max(...prices) : 0;
+  const colorCount =
+    product.colorCount ||
+    new Set(variants.map((variant) => variant.colorId || variant.color)).size;
 
   return {
     revealDelay: (index % 6) + 1,
@@ -53,11 +58,12 @@ export function mapGroupedProductToCatalogItem(product, index = 0) {
     image: product.imageUrl || variants[0]?.imageUrl || "",
     brand: product.brand,
     model: product.model,
-    type: product.type,
     minPrice,
     maxPrice,
-    sizeCount: variants.length,
-    colorCount: 1,
+    sizeCount:
+      product.sizeCount ||
+      new Set(variants.map((variant) => variant.size)).size,
+    colorCount,
     hasStock: variants.some((variant) => variant.stock > 0),
   };
 }
@@ -66,7 +72,7 @@ export function mapGroupedProductToJerseyItem(product) {
   const variants = (product.variants || []).map((variant) => ({
     id: variant.id,
     talla: variant.size,
-    version: variant.type || product.type || "LOCAL",
+    version: variant.color || "LOCAL",
     precio: variant.salePrice,
     stock: variant.stock,
     codigo: variant.itemNo || variant.sku || variant.id,
@@ -91,9 +97,11 @@ export function mapVariantToFeaturedProduct(item, index = 0) {
     name: item.name,
     price: Number(item.salePrice) || 0,
     cartId: item.id,
-    cartName: `${item.name}${item.size ? ` (${item.size})` : ""}`,
+    cartTitle: item.name,
+    cartName: item.name,
     cartCode: item.reference || item.sku || item.itemNo || "",
     cartSize: item.size || "",
+    cartColor: item.color || "",
     cartSku: item.sku || item.itemNo || "",
     cartPrice: String(Number(item.salePrice) || 0),
   };
@@ -119,6 +127,6 @@ export function mapSearchResult(item) {
     match: item.reference || item.itemNo || item.id,
     price: Number(item.salePrice) || 0,
     image: item.imageUrl || "",
-    meta: [item.type, item.size, item.category].filter(Boolean).join(" · "),
+    meta: [item.color, item.size, item.category].filter(Boolean).join(" · "),
   };
 }

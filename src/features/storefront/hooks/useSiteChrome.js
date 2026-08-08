@@ -8,13 +8,14 @@ import {
   computeSubtotal,
   formatCartItemMeta,
   formatMoney,
+  getCartItemTitle,
   loadCart,
   saveCart,
 } from "../utils/cart";
 import { setupContentInteractiveEffects } from "../effects/siteEffects";
 import useSiteDocumentUi from "./useSiteDocumentUi";
 
-export { formatCartItemMeta, formatMoney };
+export { formatCartItemMeta, formatMoney, getCartItemTitle };
 
 function useSiteChrome(children) {
   const [menuOpen, setMenuOpen] = useState(false);

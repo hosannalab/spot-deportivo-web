@@ -10,9 +10,11 @@ function FeaturedProductCard({
   price,
   badge,
   cartId,
+  cartTitle,
   cartName,
   cartCode,
   cartSize,
+  cartColor,
   cartSku,
   cartPrice,
   id,
@@ -36,10 +38,12 @@ function FeaturedProductCard({
         <ProductAddToCartButton
           image={image}
           cartId={cartId}
+          cartTitle={cartTitle || cartName}
           cartName={cartName}
           cartPrice={cartPrice ?? String(price)}
           cartCode={cartCode}
           cartSize={cartSize}
+          cartColor={cartColor}
           cartSku={cartSku}
         />
       </div>

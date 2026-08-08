@@ -15,7 +15,7 @@ const FAQS = [
   {
     question: "Que metodos de pago aceptan?",
     answer:
-      "Tarjetas de credito/debito, bancos locales, transferencia bancaria y coordinacion por WhatsApp.",
+      "Transferencia bancaria y coordinacion de pedido por WhatsApp.",
     revealDelay: "3",
   },
   {

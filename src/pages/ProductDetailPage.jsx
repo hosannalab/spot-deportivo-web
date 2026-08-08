@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import SiteChrome from "../components/SiteChrome";
 import useSitePageBoot from "../app/useSitePageBoot";
 import { fetchPublicProductStyle } from "../features/storefront/api/publicProductsApi";
@@ -24,7 +24,6 @@ function getCategoryPath(categorySlug) {
 
 function ProductDetailPage() {
   const { productId } = useParams();
-  const navigate = useNavigate();
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -49,11 +48,8 @@ function ProductDetailPage() {
         if (!active) return;
         setDetail(result);
 
-        const matchedColor =
-          result.colors?.find((color) => color.productId === productId) ||
-          pickDefaultColor(result.colors);
-
-        setSelectedColorId(matchedColor?.productId || result.productId);
+        const defaultColor = pickDefaultColor(result.colors);
+        setSelectedColorId(defaultColor?.colorId || "");
       } catch (err) {
         if (!active) return;
         setDetail(null);
@@ -71,7 +67,7 @@ function ProductDetailPage() {
   }, [productId]);
 
   const selectedColor = useMemo(
-    () => detail?.colors?.find((color) => color.productId === selectedColorId),
+    () => detail?.colors?.find((color) => color.colorId === selectedColorId),
     [detail, selectedColorId],
   );
 
@@ -97,11 +93,6 @@ function ProductDetailPage() {
     () => (selectedVariant ? getVariantAvailability(selectedVariant) : null),
     [selectedVariant],
   );
-
-  function handleColorChange(nextColorId) {
-    setSelectedColorId(nextColorId);
-    navigate(`/producto/${nextColorId}`, { replace: true });
-  }
 
   const cartMeta = buildCartMetaFromSelection({
     styleTitle: detail?.styleTitle,
@@ -132,7 +123,11 @@ function ProductDetailPage() {
 
           {!loading && detail && selectedColor && (
             <>
-              <nav className="breadcrumb product-detail__breadcrumb" aria-label="Breadcrumb">
+              <nav
+                className="breadcrumb product-detail__breadcrumb"
+                aria-label="Breadcrumb"
+                data-reveal
+              >
                 <Link to="/">Inicio</Link>
                 <span aria-hidden="true">/</span>
                 <Link to={categoryPath}>{detail.category}</Link>
@@ -141,14 +136,15 @@ function ProductDetailPage() {
               </nav>
 
               <div className="product-detail">
-                <div className="product-detail__media">
+                <div className="product-detail__media" data-reveal="scale-in">
                   <ProductImageSlot
                     src={selectedVariant?.imageUrl || selectedColor.imageUrl}
                     alt={detail.styleTitle}
+                    fit="contain"
                   />
                 </div>
 
-                <div className="product-detail__info">
+                <div className="product-detail__info" data-reveal="fade-left">
                   <p className="product-detail__brand">
                     {detail.category} · {detail.brand}
                   </p>
@@ -180,11 +176,11 @@ function ProductDetailPage() {
                     <div className="color-swatches" role="list">
                       {detail.colors.map((color) => {
                         const availability = getColorAvailability(color);
-                        const isSelected = color.productId === selectedColorId;
+                        const isSelected = color.colorId === selectedColorId;
 
                         return (
                           <button
-                            key={color.productId}
+                            key={color.colorId}
                             type="button"
                             role="listitem"
                             className={`color-swatch ${isSelected ? "is-selected" : ""} ${
@@ -192,7 +188,7 @@ function ProductDetailPage() {
                             }`}
                             aria-label={`${formatColorLabel(color.color)} · ${formatColorAvailabilitySummary(color)}`}
                             aria-pressed={isSelected}
-                            onClick={() => handleColorChange(color.productId)}
+                            onClick={() => setSelectedColorId(color.colorId)}
                           >
                             <div className="color-swatch__media">
                               <ProductImageSlot src={color.imageUrl} alt="" />
@@ -282,11 +278,13 @@ function ProductDetailPage() {
                     <ProductAddToCartButton
                       image={cartMeta.image}
                       cartId={cartMeta.id}
+                      cartTitle={cartMeta.title}
                       cartName={cartMeta.name}
                       cartPrice={String(cartMeta.price)}
                       cartCode={cartMeta.code}
                       cartSize={cartMeta.size}
                       cartSku={cartMeta.sku}
+                      cartColor={cartMeta.color}
                       cartVariant={cartMeta.variant}
                     />
                   ) : (
