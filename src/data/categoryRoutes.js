@@ -55,7 +55,7 @@ export const categoryRoutes = {
     homeLabel: "Subliminados",
     crumb: "Jerseys",
     subtitle: "MLB y LIDOM. Elige version, color y talla en la pagina del producto.",
-    image: "assets/img/cat-jerseys.png",
+    image: "assets/img/cat-jerseys.webp",
     imageAlt: "Jerseys deportivos",
     whatsappProduct: "Catalogo Jerseys",
     grouped: true,
