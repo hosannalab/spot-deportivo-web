@@ -399,7 +399,12 @@ function SiteChrome({ activeNav, children }) {
                   SPOT DEPORTIVO PRO
                 </span>
               </div>
-              <p style={{ maxWidth: "280px", marginBottom: "14px" }}>
+              <p className="footer-legal">{brandConfig.legalName}</p>
+              <p className="footer-contact">
+                Correo electronico:{" "}
+                <a href={`mailto:${brandConfig.email}`}>{brandConfig.email}</a>
+              </p>
+              <p className="footer-location">
                 Santo Domingo, Republica Dominicana
               </p>
               <div className="social-row">
@@ -473,8 +478,8 @@ function SiteChrome({ activeNav, children }) {
             </div>
           </div>
           <div className="footer-bottom">
-            © <span id="year">{new Date().getFullYear()}</span> Spot Deportivo
-            Pro. Todos los derechos reservados.
+            © <span id="year">{new Date().getFullYear()}</span>{" "}
+            {brandConfig.legalName}. Todos los derechos reservados.
           </div>
         </div>
       </footer>
