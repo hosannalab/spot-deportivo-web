@@ -107,7 +107,7 @@ function HomeNativePage() {
                       Colecciones
                     </>
                   ) : (
-                    category.title
+                    category.homeLabel || category.title
                   )}
                 </span>
                 {category.featured && (

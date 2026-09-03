@@ -52,6 +52,7 @@ export const categoryRoutes = {
     slug: "JERSEY",
     navKey: "jerseys",
     title: "Jerseys",
+    homeLabel: "Jerseys(Laminados)",
     crumb: "Jerseys",
     subtitle: "MLB y LIDOM. Elige version, color y talla en la pagina del producto.",
     image: "assets/img/cat-jerseys.png",
