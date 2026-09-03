@@ -189,10 +189,13 @@ input { font: inherit; }
   width: 42px; height: 42px; border-radius: 50%;
   background: var(--ink);
   display: flex; align-items: center; justify-content: center;
-  font: 800 15px var(--font-body); flex: none;
+  overflow: hidden; flex: none;
 }
-.brand-mark span { color: var(--accent); }
-.brand-mark em { color: var(--cream); font-style: normal; }
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .brand-name {
   font: 800 clamp(12px, 3.6vw, 17px) var(--font-body); color: var(--ink); letter-spacing: -0.01em;
   white-space: nowrap;
@@ -1103,8 +1106,7 @@ input { font: inherit; }
 .footer { background: var(--ink); color: #c9ccd1; padding: 56px 0 26px; }
 .footer-grid { display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 34px; }
 .footer-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-.footer-brand .brand-mark { background: var(--cream); }
-.footer-brand .brand-mark em { color: var(--ink); }
+.footer-brand .brand-mark { background: #000; }
 .footer-col-title { font: 800 12px var(--font-body); color: var(--paper); display: block; margin-bottom: 14px; }
 .footer-links { display: flex; flex-direction: column; gap: 9px; font: 500 13px var(--font-body); }
 .footer-links a:hover { color: var(--accent); }

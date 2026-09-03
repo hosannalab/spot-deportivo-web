@@ -7,7 +7,7 @@ export const categoryRoutes = {
     crumb: "Hombre",
     subtitle:
       "Polos y camisetas deportivas. Elige color y talla en la pagina del producto.",
-    image: "assets/img/cat-hombre.jpg",
+    image: "assets/img/cat-hombre.png",
     imageAlt: "Ropa deportiva para hombre",
     whatsappProduct: "Catalogo Hombre",
   },
@@ -19,7 +19,7 @@ export const categoryRoutes = {
     crumb: "Mujer",
     subtitle:
       "Ropa deportiva para mujer. Elige color y talla en la pagina del producto.",
-    image: "assets/img/cat-mujer.jpg",
+    image: "assets/img/cat-mujer.png",
     imageAlt: "Ropa deportiva para mujer",
     whatsappProduct: "Catalogo Mujer",
   },
@@ -31,7 +31,7 @@ export const categoryRoutes = {
     crumb: "Calzado",
     subtitle:
       "Zapatillas y calzado deportivo. Elige color y talla en la pagina del producto.",
-    image: "assets/img/cat-calzado.jpg",
+    image: "assets/img/cat-calzado.png",
     imageAlt: "Calzado deportivo",
     whatsappProduct: "Catalogo Calzado",
   },
@@ -43,7 +43,7 @@ export const categoryRoutes = {
     crumb: "Accesorios",
     subtitle:
       "Accesorios deportivos. Escribenos por WhatsApp para consultas.",
-    image: "assets/img/cat-accesorios.jpg",
+    image: "assets/img/cat-accesorios.png",
     imageAlt: "Accesorios deportivos",
     whatsappProduct: "Catalogo Accesorios",
   },
@@ -54,7 +54,7 @@ export const categoryRoutes = {
     title: "Jerseys",
     crumb: "Jerseys",
     subtitle: "MLB y LIDOM. Elige version, color y talla en la pagina del producto.",
-    image: "assets/img/cat-jerseys.jpeg",
+    image: "assets/img/cat-jerseys.png",
     imageAlt: "Jerseys deportivos",
     whatsappProduct: "Catalogo Jerseys",
     grouped: true,
@@ -67,7 +67,7 @@ export const categoryRoutes = {
     crumb: "Nuevas Colecciones",
     subtitle:
       "Lo mas reciente del catalogo. Escribenos por WhatsApp para consultas.",
-    image: "assets/img/cat-nuevas-colecciones.jpg",
+    image: "assets/img/cat-nuevas-colecciones.png",
     imageAlt: "Nuevas colecciones",
     whatsappProduct: "Nuevas Colecciones",
     featured: true,
