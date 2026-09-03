@@ -98,6 +98,7 @@ function ProductDetailPage() {
     styleTitle: detail?.styleTitle,
     color: selectedColor,
     variant: selectedVariant,
+    coverImage: detail?.imageUrl,
   });
 
   const categoryPath = getCategoryPath(detail?.categorySlug);
@@ -138,7 +139,11 @@ function ProductDetailPage() {
               <div className="product-detail">
                 <div className="product-detail__media" data-reveal="scale-in">
                   <ProductImageSlot
-                    src={selectedVariant?.imageUrl || selectedColor.imageUrl}
+                    src={
+                      selectedVariant?.imageUrl ||
+                      selectedColor.imageUrl ||
+                      detail.imageUrl
+                    }
                     alt={detail.styleTitle}
                     fit="contain"
                   />

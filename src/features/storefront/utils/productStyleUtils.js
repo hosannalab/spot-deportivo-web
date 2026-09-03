@@ -89,7 +89,7 @@ export function formatColorLabel(color) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-export function buildCartMetaFromSelection({ styleTitle, color, variant }) {
+export function buildCartMetaFromSelection({ styleTitle, color, variant, coverImage }) {
   if (!variant) return null;
 
   const sizeLabel = variant.size || "";
@@ -102,7 +102,7 @@ export function buildCartMetaFromSelection({ styleTitle, color, variant }) {
     color: colorLabel !== "Estándar" ? colorLabel : "",
     price: Number(variant.salePrice) || 0,
     code: variant.itemNo || variant.sku || color?.reference || "",
-    image: variant.imageUrl || color?.imageUrl || "",
+    image: variant.imageUrl || color?.imageUrl || coverImage || "",
     size: sizeLabel,
     sku: variant.sku || variant.itemNo || "",
     variant: colorLabel !== "Estándar" ? colorLabel : "",

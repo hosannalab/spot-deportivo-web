@@ -3,9 +3,9 @@
 
   window.__BRAND__ = {
     name: "Spot Deportivo Pro",
-    whatsappNumber: "18097020938",
+    whatsappNumber: "18498621418",
     whatsappMessage: "Hola, quiero más información sobre sus productos",
-    phoneDisplay: "(809) 702-0938",
+    phoneDisplay: "+1 (849) 862-1418",
     year: new Date().getFullYear()
   };
 })();

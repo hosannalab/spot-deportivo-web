@@ -7,7 +7,7 @@ export const categoryRoutes = {
     crumb: "Hombre",
     subtitle:
       "Polos y camisetas deportivas. Elige color y talla en la pagina del producto.",
-    image: "assets/img/cat-hombre.png",
+    image: "assets/img/cat-hombre.jpeg",
     imageAlt: "Ropa deportiva para hombre",
     whatsappProduct: "Catalogo Hombre",
   },
@@ -19,7 +19,7 @@ export const categoryRoutes = {
     crumb: "Mujer",
     subtitle:
       "Ropa deportiva para mujer. Elige color y talla en la pagina del producto.",
-    image: "assets/img/cat-mujer.png",
+    image: "assets/img/cat-mujer.jpeg",
     imageAlt: "Ropa deportiva para mujer",
     whatsappProduct: "Catalogo Mujer",
   },
@@ -43,7 +43,7 @@ export const categoryRoutes = {
     crumb: "Accesorios",
     subtitle:
       "Accesorios deportivos. Escribenos por WhatsApp para consultas.",
-    image: "assets/img/cat-accesorios.png",
+    image: "assets/img/cat-accesorios.jpeg",
     imageAlt: "Accesorios deportivos",
     whatsappProduct: "Catalogo Accesorios",
   },
@@ -52,7 +52,7 @@ export const categoryRoutes = {
     slug: "JERSEY",
     navKey: "jerseys",
     title: "Jerseys",
-    homeLabel: "Jerseys(Laminados)",
+    homeLabel: "Subliminados",
     crumb: "Jerseys",
     subtitle: "MLB y LIDOM. Elige version, color y talla en la pagina del producto.",
     image: "assets/img/cat-jerseys.png",

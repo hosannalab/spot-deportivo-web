@@ -55,7 +55,7 @@ export function mapGroupedProductToCatalogItem(product, index = 0) {
     revealDelay: (index % 6) + 1,
     productId: product.productId,
     name: product.name,
-    image: product.imageUrl || variants[0]?.imageUrl || "",
+    image: product.imageUrl || "",
     brand: product.brand,
     model: product.model,
     minPrice,
@@ -76,13 +76,13 @@ export function mapGroupedProductToJerseyItem(product) {
     precio: variant.salePrice,
     stock: variant.stock,
     codigo: variant.itemNo || variant.sku || variant.id,
-    imagen: variant.imageUrl || product.imageUrl || "",
+    imagen: variant.imageUrl || "",
   }));
 
   return {
     baseName: product.productId || product.name,
     displayName: product.name,
-    image: product.imageUrl || variants[0]?.imagen || "",
+    image: product.imageUrl || "",
     variants,
   };
 }
@@ -126,7 +126,7 @@ export function mapSearchResult(item) {
     url: item.productId ? `/producto/${item.productId}` : categoryPath,
     match: item.reference || item.itemNo || item.id,
     price: Number(item.salePrice) || 0,
-    image: item.imageUrl || "",
+    image: item.coverImageUrl || item.imageUrl || "",
     meta: [item.color, item.size, item.category].filter(Boolean).join(" · "),
   };
 }
