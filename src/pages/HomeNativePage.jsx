@@ -85,7 +85,7 @@ function HomeNativePage() {
             {categoryRouteList.map((category, index) => (
               <a
                 key={category.path}
-                className={`category-card${category.featured ? " category-card--feature" : ""}${category.navKey === "jerseys" ? " category-card--jerseys" : ""}`}
+                className={`category-card${category.featured ? " category-card--feature" : ""}`}
                 href={category.path}
                 data-reveal
                 data-reveal-delay={category.featured ? undefined : String((index % 5) + 1)}

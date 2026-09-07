@@ -602,13 +602,6 @@ input { font: inherit; }
   object-position: center;
   transition: transform 0.5s var(--ease-out);
 }
-.category-card--jerseys img {
-  object-fit: contain;
-  object-position: center;
-  background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
-  padding: 10px;
-  box-sizing: border-box;
-}
 .category-card:hover img { transform: scale(1.08); }
 .category-card__scrim {
   position: absolute; inset: 0;
