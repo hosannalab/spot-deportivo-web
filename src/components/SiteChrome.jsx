@@ -57,7 +57,7 @@ function SiteChrome({ activeNav, children }) {
       >
         <a className="brand" href="/" aria-label="Spot Deportivo Pro - inicio">
           <span className="brand-mark">
-            <img src="/assets/img/logo-mark.png" alt="" />
+            <img src="/assets/img/logo-spot.png" alt="" />
           </span>
           <span className="brand-name">
             SPOT DEPORTIVO <em>PRO</em>
@@ -392,7 +392,7 @@ function SiteChrome({ activeNav, children }) {
             <div>
               <div className="footer-brand">
                 <span className="brand-mark">
-                  <img src="/assets/img/logo-mark.png" alt="" />
+                  <img src="/assets/img/logo-spot.png" alt="" />
                 </span>
                 <span className="brand-name" style={{ color: "var(--paper)" }}>
                   SPOT DEPORTIVO PRO
