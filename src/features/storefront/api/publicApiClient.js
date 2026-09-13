@@ -41,6 +41,45 @@ async function parsePublicResponse(response) {
 }
 
 export async function fetchPublicProducts(query = {}) {
+  const { all, ...rest } = query;
+  if (!all) {
+    return fetchPublicProductsPage(rest);
+  }
+
+  const pageSize = Number(rest.pageSize) || 100;
+  let page = 1;
+  let items = [];
+  let company = null;
+  let total = 0;
+
+  while (page <= 50) {
+    const result = await fetchPublicProductsPage({
+      ...rest,
+      page,
+      pageSize,
+    });
+    company = result.company ?? company;
+    total = Number(result.total ?? 0);
+    const batch = result.items || [];
+    items = items.concat(batch);
+
+    if (!batch.length || items.length >= total || page >= (result.totalPages || 1)) {
+      break;
+    }
+    page += 1;
+  }
+
+  return {
+    items,
+    company,
+    total,
+    page: 1,
+    pageSize: items.length,
+    totalPages: 1,
+  };
+}
+
+async function fetchPublicProductsPage(query = {}) {
   const params = new URLSearchParams(removeEmptyParams(query));
   const response = await fetch(`${API_URL}/public/products?${params.toString()}`, {
     cache: "no-store",

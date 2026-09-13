@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import SiteChrome from "../components/SiteChrome";
 import useSitePageBoot from "../app/useSitePageBoot";
 import CatalogHero from "../features/storefront/components/CatalogHero";
+import CatalogLoadMore from "../features/storefront/components/CatalogLoadMore";
 import GroupedCatalogCard from "../features/storefront/components/GroupedCatalogCard";
 import ProductCardSkeleton from "../features/storefront/components/ProductCardSkeleton";
 import usePublicProducts from "../features/storefront/hooks/usePublicProducts";
@@ -10,15 +11,25 @@ import { mapStyleToCatalogItem } from "../features/storefront/utils/productMappe
 function CategoryCatalogPage({ config }) {
   useSitePageBoot(`${config.title} — Catalogo | Spot Deportivo Pro`);
 
-  const { items, loading, error } = usePublicProducts({
-    page: 1,
-    pageSize: 24,
-    status: "ACTIVE",
-    categorySlug: config.slug,
-    groupByStyle: true,
-    sortBy: "productName",
-    sortOrder: "asc",
-  });
+  const {
+    items,
+    loading,
+    loadingMore,
+    error,
+    hasMore,
+    total,
+    loadMore,
+  } = usePublicProducts(
+    {
+      pageSize: 24,
+      status: "ACTIVE",
+      categorySlug: config.slug,
+      groupByStyle: true,
+      sortBy: "productName",
+      sortOrder: "asc",
+    },
+    { paginate: true },
+  );
 
   const catalogItems = useMemo(
     () => items.map((item, index) => mapStyleToCatalogItem(item, index)),
@@ -73,7 +84,18 @@ function CategoryCatalogPage({ config }) {
                 <GroupedCatalogCard key={product.styleKey || product.productId} {...product} />
               ))
             )}
+            {loadingMore && <ProductCardSkeleton count={4} />}
           </div>
+
+          {!loading && catalogItems.length > 0 && (
+            <CatalogLoadMore
+              hasMore={hasMore}
+              loadingMore={loadingMore}
+              onLoadMore={loadMore}
+              loaded={catalogItems.length}
+              total={total}
+            />
+          )}
         </div>
       </section>
     </SiteChrome>
