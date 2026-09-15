@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import SiteChrome from "../components/SiteChrome";
 import useSitePageBoot from "../app/useSitePageBoot";
 import { fetchPublicProductStyle } from "../features/storefront/api/publicProductsApi";
@@ -24,6 +24,10 @@ function getCategoryPath(categorySlug) {
 
 function ProductDetailPage() {
   const { productId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedColorId = searchParams.get("color") || "";
+  const requestedColorIdRef = useRef(requestedColorId);
+  requestedColorIdRef.current = requestedColorId;
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -47,8 +51,10 @@ function ProductDetailPage() {
         const result = await fetchPublicProductStyle(productId);
         if (!active) return;
         setDetail(result);
-
-        const defaultColor = pickDefaultColor(result.colors);
+        const requested = result.colors?.find(
+          (color) => color.colorId === requestedColorIdRef.current,
+        );
+        const defaultColor = requested || pickDefaultColor(result.colors);
         setSelectedColorId(defaultColor?.colorId || "");
       } catch (err) {
         if (!active) return;
@@ -65,6 +71,14 @@ function ProductDetailPage() {
       active = false;
     };
   }, [productId]);
+
+  useEffect(() => {
+    if (!detail?.colors?.length) return;
+
+    const requested = detail.colors.find((color) => color.colorId === requestedColorId);
+    const defaultColor = requested || pickDefaultColor(detail.colors);
+    setSelectedColorId(defaultColor?.colorId || "");
+  }, [detail, requestedColorId]);
 
   const selectedColor = useMemo(
     () => detail?.colors?.find((color) => color.colorId === selectedColorId),
@@ -193,7 +207,13 @@ function ProductDetailPage() {
                             }`}
                             aria-label={`${formatColorLabel(color.color)} · ${formatColorAvailabilitySummary(color)}`}
                             aria-pressed={isSelected}
-                            onClick={() => setSelectedColorId(color.colorId)}
+                            onClick={() => {
+                              setSelectedColorId(color.colorId);
+                              setSearchParams(
+                                { color: color.colorId },
+                                { replace: true },
+                              );
+                            }}
                           >
                             <div className="color-swatch__media">
                               <ProductImageSlot src={color.imageUrl} alt="" />

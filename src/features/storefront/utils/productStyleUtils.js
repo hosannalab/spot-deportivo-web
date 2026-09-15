@@ -109,13 +109,11 @@ export function buildCartMetaFromSelection({ styleTitle, color, variant, coverIm
   };
 }
 
-export function formatStyleAvailabilityHint({ colorCount, sizeCount, hasStock }) {
+export function formatStyleAvailabilityHint({ color, sizeCount, hasStock }) {
   const parts = [];
 
-  if (colorCount > 1) {
-    parts.push(`${colorCount} colores`);
-  } else if (colorCount === 1) {
-    parts.push("1 color");
+  if (color) {
+    parts.push(formatColorLabel(color));
   }
 
   if (sizeCount > 1) {

@@ -96,6 +96,7 @@ function useSiteChrome(children) {
           page: 1,
           pageSize: 8,
           status: "ACTIVE",
+          groupByStyle: true,
         });
         if (!ignore) {
           setSearchResults((result.items || []).map(mapSearchResult));

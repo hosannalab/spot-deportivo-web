@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import {
+  formatColorLabel,
   formatStyleAvailabilityHint,
   getPriceLabel,
 } from "../utils/productStyleUtils";
@@ -12,14 +13,18 @@ function GroupedCatalogCard({
   image,
   brand,
   category,
+  color,
+  colorId,
   minPrice,
   maxPrice,
-  colorCount,
   sizeCount,
   hasStock,
 }) {
-  const metaParts = [category, brand].filter(Boolean);
+  const metaParts = [category, brand, color ? formatColorLabel(color) : null].filter(
+    Boolean,
+  );
   const metaText = metaParts.length ? metaParts.join(" · ") : null;
+  const colorQuery = colorId ? `?color=${encodeURIComponent(colorId)}` : "";
 
   return (
     <article
@@ -28,7 +33,7 @@ function GroupedCatalogCard({
       data-reveal
       data-reveal-delay={revealDelay}
     >
-      <Link className="product-card__link" to={`/producto/${productId}`}>
+      <Link className="product-card__link" to={`/producto/${productId}${colorQuery}`}>
         <div className="product-card__media">
           <ProductImageSlot src={image} alt={name} />
           <div className="product-card__glow" aria-hidden="true"></div>
@@ -40,7 +45,7 @@ function GroupedCatalogCard({
             {getPriceLabel(minPrice, maxPrice)}
           </div>
           <p className="product-card__hint">
-            {formatStyleAvailabilityHint({ colorCount, sizeCount, hasStock })}
+            {formatStyleAvailabilityHint({ color: null, sizeCount, hasStock })}
           </p>
           <span className="btn-dark product-card__cta">Ver producto</span>
         </div>

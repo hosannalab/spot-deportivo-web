@@ -32,6 +32,8 @@ export function mapStyleToCatalogItem(style, index = 0) {
     brand: style.brand,
     model: style.model,
     category: style.category,
+    color: style.color,
+    colorId: style.colorId,
     minPrice: style.minPrice,
     maxPrice: style.maxPrice,
     colorCount: style.colorCount,
@@ -116,17 +118,23 @@ function getRouteForCategory(slug) {
 
 export function mapSearchResult(item) {
   const categoryPath = getRouteForCategory(item.categorySlug || item.category);
+  const isColorway = Boolean(item.styleKey || item.defaultProductId);
+  const productId = item.defaultProductId || item.productId;
   const displayName =
-    item.brand && item.model
+    item.styleTitle ||
+    (item.brand && item.model
       ? `${item.brand} ${item.model}`.trim()
-      : item.name;
+      : item.name);
+  const colorQuery = item.colorId ? `?color=${encodeURIComponent(item.colorId)}` : "";
 
   return {
     name: displayName,
-    url: item.productId ? `/producto/${item.productId}` : categoryPath,
-    match: item.reference || item.itemNo || item.id,
-    price: Number(item.salePrice) || 0,
+    url: productId ? `/producto/${productId}${colorQuery}` : categoryPath,
+    match: item.reference || item.itemNo || item.color || item.id,
+    price: Number(isColorway ? item.minPrice : item.salePrice) || 0,
     image: item.coverImageUrl || item.imageUrl || "",
-    meta: [item.color, item.size, item.category].filter(Boolean).join(" · "),
+    meta: [item.color, isColorway ? null : item.size, item.category]
+      .filter(Boolean)
+      .join(" · "),
   };
 }
