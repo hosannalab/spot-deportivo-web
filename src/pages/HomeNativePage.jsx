@@ -52,9 +52,6 @@ function HomeNativePage() {
         <div className="hero-blob hero-blob--a" aria-hidden="true"></div>
         <div className="hero-blob hero-blob--b" aria-hidden="true"></div>
         <div className="hero-inner">
-          <span className="eyebrow hero-eyebrow" data-hero-anim>
-            NUEVA COLECCION AERO-FUEL
-          </span>
           <h1 className="hero-title" data-hero-anim>
             Entrena
             <br />
