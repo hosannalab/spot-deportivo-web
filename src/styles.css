@@ -554,7 +554,22 @@ input { font: inherit; }
     padding: 72px 20px;
   }
 }
-.hero-eyebrow { color: var(--accent); margin-bottom: 18px; display: block; }
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  color: rgba(247, 244, 237, 0.9);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+}
+.hero-eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 2px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
 .hero-title {
   font: 400 clamp(2.6rem, 7.2vw, 5.4rem)/1.12 var(--font-display);
   text-transform: uppercase;

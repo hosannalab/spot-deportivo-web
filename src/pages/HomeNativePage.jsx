@@ -52,6 +52,9 @@ function HomeNativePage() {
         <div className="hero-blob hero-blob--a" aria-hidden="true"></div>
         <div className="hero-blob hero-blob--b" aria-hidden="true"></div>
         <div className="hero-inner">
+          <p className="eyebrow hero-eyebrow" data-hero-anim>
+            Spot Deportivo Pro
+          </p>
           <h1 className="hero-title" data-hero-anim>
             Entrena
             <br />

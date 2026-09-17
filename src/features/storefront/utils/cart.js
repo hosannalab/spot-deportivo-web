@@ -51,7 +51,7 @@ export function buildWhatsAppOrderMessage(
   if (!cart.length) return "";
 
   const lines = [
-    `🛒 *Nuevo pedido — ${storeName}*`,
+    `*Nuevo pedido — ${storeName}*`,
     "",
   ];
 
@@ -99,6 +99,7 @@ export function buildWhatsAppOrderMessage(
     lines.push("*Subtotal:* A confirmar por WhatsApp");
   }
 
+  lines.push("Costo de envío: Pendiente");
   lines.push("");
   lines.push(
     "Hola, quisiera confirmar disponibilidad, forma de pago y entrega. ¡Gracias!",

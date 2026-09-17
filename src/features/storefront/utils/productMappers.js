@@ -120,11 +120,7 @@ export function mapSearchResult(item) {
   const categoryPath = getRouteForCategory(item.categorySlug || item.category);
   const isColorway = Boolean(item.styleKey || item.defaultProductId);
   const productId = item.defaultProductId || item.productId;
-  const displayName =
-    item.styleTitle ||
-    (item.brand && item.model
-      ? `${item.brand} ${item.model}`.trim()
-      : item.name);
+  const displayName = item.styleTitle || item.name || "Producto";
   const colorQuery = item.colorId ? `?color=${encodeURIComponent(item.colorId)}` : "";
 
   return {
